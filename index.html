@@ -298,10 +298,6 @@
             font-family: 'Hind Siliguri', sans-serif;
         }
         
-        .share-facebook {
-            background: #3b5998;
-        }
-        
         .share-whatsapp {
             background: #25D366;
         }
@@ -310,20 +306,12 @@
             background: #0084FF;
         }
         
-        .share-link {
-            background: #6c757d;
-        }
-        
-        .copy-message {
-            margin-top: 10px;
-            padding: 8px;
-            background: #d4edda;
-            color: #155724;
-            border-radius: 4px;
-            text-align: center;
+        .loading {
             display: none;
-            font-family: 'Hind Siliguri', sans-serif;
-            font-weight: 500;
+            text-align: center;
+            padding: 10px;
+            color: #1e5799;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -414,28 +402,25 @@
                     </div>
                 </div>
                 
+                <div class="loading" id="loadingMessage">
+                    ইমেজ তৈরি হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...
+                </div>
+                
                 <div class="action-buttons">
                     <button class="btn btn-share" id="shareReceipt">রশিদ শেয়ার করুন</button>
-                    <button class="btn btn-download" id="downloadReceipt">ডাউনলোড করুন</button>
+                    <button class="btn btn-download" id="downloadReceipt">ইমেজ ডাউনলোড করুন</button>
                 </div>
                 
                 <div class="share-options" id="shareOptions">
-                    <h3>শেয়ার করুন:</h3>
+                    <h3>ইমেজ শেয়ার করুন:</h3>
                     <div class="share-buttons">
-                        <button class="share-btn share-facebook" id="shareFacebook">
-                            <span>Facebook</span>
-                        </button>
                         <button class="share-btn share-whatsapp" id="shareWhatsApp">
                             <span>WhatsApp</span>
                         </button>
                         <button class="share-btn share-messenger" id="shareMessenger">
                             <span>Messenger</span>
                         </button>
-                        <button class="share-btn share-link" id="shareLink">
-                            <span>লিংক কপি</span>
-                        </button>
                     </div>
-                    <div class="copy-message" id="copyMessage">লিংক কপি করা হয়েছে!</div>
                 </div>
             </div>
         </div>
@@ -445,6 +430,7 @@
         </footer>
     </div>
 
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
         // DOM Elements
         const transactionTypeOptions = document.querySelectorAll('.transaction-type-option');
@@ -457,6 +443,7 @@
         const shareBtn = document.getElementById('shareReceipt');
         const downloadBtn = document.getElementById('downloadReceipt');
         const shareOptions = document.getElementById('shareOptions');
+        const loadingMessage = document.getElementById('loadingMessage');
         
         // Form elements for sending money
         const accountNumberInput = document.getElementById('accountNumber');
@@ -472,11 +459,8 @@
         const totalAmountInput = document.getElementById('totalAmount');
         
         // Share buttons
-        const shareFacebookBtn = document.getElementById('shareFacebook');
         const shareWhatsAppBtn = document.getElementById('shareWhatsApp');
         const shareMessengerBtn = document.getElementById('shareMessenger');
-        const shareLinkBtn = document.getElementById('shareLink');
-        const copyMessage = document.getElementById('copyMessage');
         
         // Transaction type selection
         transactionTypeOptions.forEach(option => {
@@ -521,6 +505,11 @@
         generateReceiptBtn.addEventListener('click', () => {
             const transactionType = transactionTypeInput.value;
             let receiptHTML = '';
+            
+            // Get current date and time in English format
+            const now = new Date();
+            const date = now.toLocaleDateString('en-US');
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
             if (transactionType === 'send') {
                 const accountNumber = accountNumberInput.value;
@@ -569,11 +558,11 @@
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">তারিখ:</span>
-                        <span class="receipt-value">${new Date().toLocaleDateString('bn-BD')}</span>
+                        <span class="receipt-value">${date}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">সময়:</span>
-                        <span class="receipt-value">${new Date().toLocaleTimeString('bn-BD')}</span>
+                        <span class="receipt-value">${time}</span>
                     </div>
                     <div class="receipt-row receipt-total">
                         <span class="receipt-label">স্ট্যাটাস:</span>
@@ -615,11 +604,11 @@
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">তারিখ:</span>
-                        <span class="receipt-value">${new Date().toLocaleDateString('bn-BD')}</span>
+                        <span class="receipt-value">${date}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">সময়:</span>
-                        <span class="receipt-value">${new Date().toLocaleTimeString('bn-BD')}</span>
+                        <span class="receipt-value">${time}</span>
                     </div>
                 `;
             }
@@ -628,6 +617,29 @@
             // Hide share options after generating new receipt
             shareOptions.style.display = 'none';
         });
+        
+        // Function to convert receipt to image and return data URL
+        function receiptToImage(callback) {
+            loadingMessage.style.display = 'block';
+            
+            const receiptElement = document.getElementById('receiptPreview');
+            
+            html2canvas(receiptElement, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                // Convert canvas to JPEG
+                const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                loadingMessage.style.display = 'none';
+                callback(jpegDataUrl);
+            }).catch(error => {
+                console.error('Error converting receipt to image:', error);
+                loadingMessage.style.display = 'none';
+                alert('ইমেজ তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+            });
+        }
         
         // Share receipt
         shareBtn.addEventListener('click', () => {
@@ -639,54 +651,62 @@
             shareOptions.style.display = 'block';
         });
         
-        // Share on Facebook
-        shareFacebookBtn.addEventListener('click', () => {
-            const text = encodeURIComponent('আমার টাকা লেনদেনের রশিদ দেখুন');
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${text}`, '_blank');
-        });
-        
         // Share on WhatsApp
         shareWhatsAppBtn.addEventListener('click', () => {
-            const text = encodeURIComponent('আমার টাকা লেনদেনের রশিদ দেখুন: ' + window.location.href);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
+            receiptToImage((imageDataUrl) => {
+                // Create a temporary link to download the image
+                const link = document.createElement('a');
+                link.download = 'transaction-receipt.jpg';
+                link.href = imageDataUrl;
+                
+                // Create a blob from the data URL
+                fetch(imageDataUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], 'transaction-receipt.jpg', { type: 'image/jpeg' });
+                        const shareUrl = `https://web.whatsapp.com/send?text=${encodeURIComponent('টাকা লেনদেনের রশিদ')}`;
+                        
+                        // For mobile devices - use WhatsApp sharing intent
+                        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            // This is a simplified approach - in a real app you'd need a server to handle this
+                            window.open(`whatsapp://send?text=${encodeURIComponent('টাকা লেনদেনের রশিদ')}`, '_blank');
+                        } else {
+                            // For desktop - download and prompt user to share manually
+                            link.click();
+                            alert('ইমেজ ডাউনলোড হয়েছে। অনুগ্রহ করে WhatsApp এ ম্যানুয়ালি শেয়ার করুন।');
+                        }
+                    });
+            });
         });
         
         // Share on Messenger
         shareMessengerBtn.addEventListener('click', () => {
-            window.open(`fb-messenger://share?link=${encodeURIComponent(window.location.href)}`, '_blank');
-        });
-        
-        // Copy link
-        shareLinkBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                copyMessage.style.display = 'block';
-                setTimeout(() => {
-                    copyMessage.style.display = 'none';
-                }, 3000);
+            receiptToImage((imageDataUrl) => {
+                // For Messenger, we'll download the image and prompt user to share manually
+                const link = document.createElement('a');
+                link.download = 'transaction-receipt.jpg';
+                link.href = imageDataUrl;
+                link.click();
+                alert('ইমেজ ডাউনলোড হয়েছে। অনুগ্রহ করে Messenger এ ম্যানুয়ালি শেয়ার করুন।');
             });
         });
         
-        // Download receipt (simplified version)
+        // Download receipt as JPEG
         downloadBtn.addEventListener('click', () => {
             if (receiptDetails.innerHTML.includes('প্রমাণপত্র তৈরি করতে')) {
                 alert('প্রথমে প্রমাণপত্র তৈরি করুন');
                 return;
             }
             
-            // Create a temporary canvas to convert receipt to image
-            const receiptElement = document.getElementById('receiptPreview');
-            html2canvas(receiptElement).then(canvas => {
+            receiptToImage((imageDataUrl) => {
                 const link = document.createElement('a');
-                link.download = 'টাকা-লেনদেন-রশিদ.png';
-                link.href = canvas.toDataURL('image/png');
+                link.download = 'transaction-receipt.jpg';
+                link.href = imageDataUrl;
                 link.click();
             });
         });
-        
-        // Load html2canvas library for download functionality
-        const script = document.createElement('script');
-        script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
-        document.head.appendChild(script);
     </script>
 </body>
 </html>
