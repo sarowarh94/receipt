@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>টাকা লেনদেন প্রমাণপত্র সিস্টেম</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .app-description {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+        
+        .preview-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        
+        input:focus, select:focus {
+            border-color: #1e5799;
+            outline: none;
+        }
+        
+        .transaction-type-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .transaction-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .transaction-type-option.selected {
+            background-color: #1e5799;
+            color: white;
+            border-color: #1e5799;
+        }
+        
+        .amount-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .amount-group input {
+            flex: 1;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #1e5799;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background: #16457a;
+        }
+        
+        .receipt {
+            background: white;
+            border: 2px dashed #1e5799;
+            border-radius: 10px;
+            padding: 25px;
+            position: relative;
+            min-height: 400px;
+        }
+        
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1e5799;
+            padding-bottom: 15px;
+        }
+        
+        .receipt-title {
+            font-size: 24px;
+            color: #1e5799;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .receipt-subtitle {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .receipt-details {
+            margin-bottom: 20px;
+        }
+        
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dotted #ddd;
+        }
+        
+        .receipt-label {
+            font-weight: 600;
+        }
+        
+        .receipt-value {
+            font-weight: 500;
+        }
+        
+        .receipt-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e5799;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #1e5799;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 60px;
+            color: rgba(30, 87, 153, 0.1);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+        }
+        
+        .btn-share {
+            background: #28a745;
+        }
+        
+        .btn-share:hover {
+            background: #218838;
+        }
+        
+        .btn-download {
+            background: #17a2b8;
+        }
+        
+        .btn-download:hover {
+            background: #138496;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            font-weight: 400;
+        }
+        
+        .service-charge-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .service-charge-group input {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .input-section, .preview-section {
+                flex: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+        }
+        
+        .share-options {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .share-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        
+        .share-facebook {
+            background: #3b5998;
+        }
+        
+        .share-whatsapp {
+            background: #25D366;
+        }
+        
+        .share-messenger {
+            background: #0084FF;
+        }
+        
+        .share-link {
+            background: #6c757d;
+        }
+        
+        .copy-message {
+            margin-top: 10px;
+            padding: 8px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>টাকা লেনদেন প্রমাণপত্র সিস্টেম</h1>
+            <p class="app-description">টাকা পাঠানো এবং উত্তোলনের জন্য প্রমাণপত্র তৈরি ও শেয়ার করুন</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="transactionType">লেনদেনের ধরন</label>
+                    <div class="transaction-type-group">
+                        <div class="transaction-type-option" data-value="send">টাকা পাঠানো</div>
+                        <div class="transaction-type-option" data-value="withdraw">টাকা উত্তোলন</div>
+                    </div>
+                    <input type="hidden" id="transactionType" value="send">
+                </div>
+                
+                <div id="sendFields">
+                    <div class="form-group">
+                        <label for="accountNumber">অ্যাকাউন্ট নম্বর</label>
+                        <input type="text" id="accountNumber" placeholder="অ্যাকাউন্ট নম্বর লিখুন">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sendAmount">টাকার পরিমাণ</label>
+                        <input type="number" id="sendAmount" placeholder="টাকার পরিমাণ লিখুন">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transactionMethod">পাঠানোর ধরন</label>
+                        <select id="transactionMethod">
+                            <option value="cash-in">ক্যাশ ইন</option>
+                            <option value="send-money">সেন্ড মানি</option>
+                            <option value="cash-out">ক্যাশ আউট</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastFourDigits">অ্যাকাউন্টের শেষ ৪ ডিজিট</label>
+                        <input type="text" id="lastFourDigits" placeholder="শেষ ৪ ডিজিট লিখুন" maxlength="4">
+                    </div>
+                </div>
+                
+                <div id="withdrawFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="withdrawAccountNumber">অ্যাকাউন্ট নম্বর</label>
+                        <input type="text" id="withdrawAccountNumber" placeholder="অ্যাকাউন্ট নম্বর লিখুন">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="withdrawAmount">টাকার পরিমাণ</label>
+                        <input type="number" id="withdrawAmount" placeholder="টাকার পরিমাণ লিখুন">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceChargePercent">সার্ভিস চার্জ (%)</label>
+                        <input type="number" id="serviceChargePercent" placeholder="সার্ভিস চার্জ (%)" value="1.5" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceCharge">সার্ভিস চার্জ (টাকা)</label>
+                        <input type="number" id="serviceCharge" placeholder="সার্ভিস চার্জ" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalAmount">সর্বমোট প্রাপ্ত টাকা</label>
+                        <input type="number" id="totalAmount" placeholder="সর্বমোট প্রাপ্ত টাকা" readonly>
+                    </div>
+                </div>
+                
+                <button class="btn" id="generateReceipt">প্রমাণপত্র তৈরি করুন</button>
+            </div>
+            
+            <div class="preview-section">
+                <div class="receipt" id="receiptPreview">
+                    <div class="watermark" id="watermark">PAID</div>
+                    <div class="receipt-header">
+                        <h2 class="receipt-title">টাকা লেনদেন প্রমাণপত্র</h2>
+                        <p class="receipt-subtitle">লেনদেনের বিস্তারিত তথ্য</p>
+                    </div>
+                    
+                    <div class="receipt-details" id="receiptDetails">
+                        <p>প্রমাণপত্র তৈরি করতে বাম পাশের ফর্মটি পূরণ করুন</p>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-share" id="shareReceipt">রশিদ শেয়ার করুন</button>
+                    <button class="btn btn-download" id="downloadReceipt">ডাউনলোড করুন</button>
+                </div>
+                
+                <div class="share-options" id="shareOptions">
+                    <h3>শেয়ার করুন:</h3>
+                    <div class="share-buttons">
+                        <button class="share-btn share-facebook" id="shareFacebook">
+                            <span>Facebook</span>
+                        </button>
+                        <button class="share-btn share-whatsapp" id="shareWhatsApp">
+                            <span>WhatsApp</span>
+                        </button>
+                        <button class="share-btn share-messenger" id="shareMessenger">
+                            <span>Messenger</span>
+                        </button>
+                        <button class="share-btn share-link" id="shareLink">
+                            <span>লিংক কপি</span>
+                        </button>
+                    </div>
+                    <div class="copy-message" id="copyMessage">লিংক কপি করা হয়েছে!</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© ২০২৩ টাকা লেনদেন প্রমাণপত্র সিস্টেম | সকল অধিকার সংরক্ষিত</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const transactionTypeOptions = document.querySelectorAll('.transaction-type-option');
+        const transactionTypeInput = document.getElementById('transactionType');
+        const sendFields = document.getElementById('sendFields');
+        const withdrawFields = document.getElementById('withdrawFields');
+        const generateReceiptBtn = document.getElementById('generateReceipt');
+        const receiptDetails = document.getElementById('receiptDetails');
+        const watermark = document.getElementById('watermark');
+        const shareBtn = document.getElementById('shareReceipt');
+        const downloadBtn = document.getElementById('downloadReceipt');
+        const shareOptions = document.getElementById('shareOptions');
+        
+        // Form elements for sending money
+        const accountNumberInput = document.getElementById('accountNumber');
+        const sendAmountInput = document.getElementById('sendAmount');
+        const transactionMethodInput = document.getElementById('transactionMethod');
+        const lastFourDigitsInput = document.getElementById('lastFourDigits');
+        
+        // Form elements for withdrawal
+        const withdrawAccountNumberInput = document.getElementById('withdrawAccountNumber');
+        const withdrawAmountInput = document.getElementById('withdrawAmount');
+        const serviceChargePercentInput = document.getElementById('serviceChargePercent');
+        const serviceChargeInput = document.getElementById('serviceCharge');
+        const totalAmountInput = document.getElementById('totalAmount');
+        
+        // Share buttons
+        const shareFacebookBtn = document.getElementById('shareFacebook');
+        const shareWhatsAppBtn = document.getElementById('shareWhatsApp');
+        const shareMessengerBtn = document.getElementById('shareMessenger');
+        const shareLinkBtn = document.getElementById('shareLink');
+        const copyMessage = document.getElementById('copyMessage');
+        
+        // Transaction type selection
+        transactionTypeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                transactionTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                transactionTypeInput.value = option.dataset.value;
+                
+                if (option.dataset.value === 'send') {
+                    sendFields.style.display = 'block';
+                    withdrawFields.style.display = 'none';
+                    watermark.style.display = 'block';
+                } else {
+                    sendFields.style.display = 'none';
+                    withdrawFields.style.display = 'block';
+                    watermark.style.display = 'block';
+                }
+                
+                // Hide share options when switching transaction type
+                shareOptions.style.display = 'none';
+            });
+        });
+        
+        // Set default selection
+        document.querySelector('.transaction-type-option[data-value="send"]').classList.add('selected');
+        
+        // Calculate service charge and total amount for withdrawal
+        withdrawAmountInput.addEventListener('input', calculateCharges);
+        serviceChargePercentInput.addEventListener('input', calculateCharges);
+        
+        function calculateCharges() {
+            const amount = parseFloat(withdrawAmountInput.value) || 0;
+            const chargePercent = parseFloat(serviceChargePercentInput.value) || 0;
+            
+            const charge = (amount * chargePercent) / 100;
+            serviceChargeInput.value = charge.toFixed(2);
+            
+            totalAmountInput.value = (amount - charge).toFixed(2);
+        }
+        
+        // Generate receipt
+        generateReceiptBtn.addEventListener('click', () => {
+            const transactionType = transactionTypeInput.value;
+            let receiptHTML = '';
+            
+            if (transactionType === 'send') {
+                const accountNumber = accountNumberInput.value;
+                const amount = sendAmountInput.value;
+                const transactionMethod = transactionMethodInput.value;
+                const lastFourDigits = lastFourDigitsInput.value;
+                
+                if (!accountNumber || !amount || !lastFourDigits) {
+                    alert('অনুগ্রহ করে সমস্ত তথ্য প্রদান করুন');
+                    return;
+                }
+                
+                let methodText = '';
+                switch(transactionMethod) {
+                    case 'cash-in':
+                        methodText = 'ক্যাশ ইন';
+                        break;
+                    case 'send-money':
+                        methodText = 'সেন্ড মানি';
+                        break;
+                    case 'cash-out':
+                        methodText = 'ক্যাশ আউট';
+                        break;
+                }
+                
+                receiptHTML = `
+                    <div class="receipt-row">
+                        <span class="receipt-label">লেনদেনের ধরন:</span>
+                        <span class="receipt-value">টাকা পাঠানো</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">অ্যাকাউন্ট নম্বর:</span>
+                        <span class="receipt-value">${accountNumber}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">টাকার পরিমাণ:</span>
+                        <span class="receipt-value">${amount} টাকা</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">পাঠানোর ধরন:</span>
+                        <span class="receipt-value">${methodText}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">শেষ ৪ ডিজিট:</span>
+                        <span class="receipt-value">${lastFourDigits}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">তারিখ:</span>
+                        <span class="receipt-value">${new Date().toLocaleDateString('bn-BD')}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">সময়:</span>
+                        <span class="receipt-value">${new Date().toLocaleTimeString('bn-BD')}</span>
+                    </div>
+                    <div class="receipt-row receipt-total">
+                        <span class="receipt-label">স্ট্যাটাস:</span>
+                        <span class="receipt-value">সফল</span>
+                    </div>
+                `;
+            } else {
+                const accountNumber = withdrawAccountNumberInput.value;
+                const amount = withdrawAmountInput.value;
+                const serviceChargePercent = serviceChargePercentInput.value;
+                const serviceCharge = serviceChargeInput.value;
+                const total = totalAmountInput.value;
+                
+                if (!accountNumber || !amount || !serviceChargePercent) {
+                    alert('অনুগ্রহ করে সমস্ত তথ্য প্রদান করুন');
+                    return;
+                }
+                
+                receiptHTML = `
+                    <div class="receipt-row">
+                        <span class="receipt-label">লেনদেনের ধরন:</span>
+                        <span class="receipt-value">টাকা উত্তোলন</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">অ্যাকাউন্ট নম্বর:</span>
+                        <span class="receipt-value">${accountNumber}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">টাকার পরিমাণ:</span>
+                        <span class="receipt-value">${amount} টাকা</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">সার্ভিস চার্জ (${serviceChargePercent}%):</span>
+                        <span class="receipt-value">${serviceCharge} টাকা</span>
+                    </div>
+                    <div class="receipt-row receipt-total">
+                        <span class="receipt-label">সর্বমোট প্রাপ্ত টাকা:</span>
+                        <span class="receipt-value">${total} টাকা</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">তারিখ:</span>
+                        <span class="receipt-value">${new Date().toLocaleDateString('bn-BD')}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">সময়:</span>
+                        <span class="receipt-value">${new Date().toLocaleTimeString('bn-BD')}</span>
+                    </div>
+                `;
+            }
+            
+            receiptDetails.innerHTML = receiptHTML;
+            // Hide share options after generating new receipt
+            shareOptions.style.display = 'none';
+        });
+        
+        // Share receipt
+        shareBtn.addEventListener('click', () => {
+            if (receiptDetails.innerHTML.includes('প্রমাণপত্র তৈরি করতে')) {
+                alert('প্রথমে প্রমাণপত্র তৈরি করুন');
+                return;
+            }
+            
+            shareOptions.style.display = 'block';
+        });
+        
+        // Share on Facebook
+        shareFacebookBtn.addEventListener('click', () => {
+            const text = encodeURIComponent('আমার টাকা লেনদেনের রশিদ দেখুন');
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${text}`, '_blank');
+        });
+        
+        // Share on WhatsApp
+        shareWhatsAppBtn.addEventListener('click', () => {
+            const text = encodeURIComponent('আমার টাকা লেনদেনের রশিদ দেখুন: ' + window.location.href);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        });
+        
+        // Share on Messenger
+        shareMessengerBtn.addEventListener('click', () => {
+            window.open(`fb-messenger://share?link=${encodeURIComponent(window.location.href)}`, '_blank');
+        });
+        
+        // Copy link
+        shareLinkBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 3000);
+            });
+        });
+        
+        // Download receipt (simplified version)
+        downloadBtn.addEventListener('click', () => {
+            if (receiptDetails.innerHTML.includes('প্রমাণপত্র তৈরি করতে')) {
+                alert('প্রথমে প্রমাণপত্র তৈরি করুন');
+                return;
+            }
+            
+            // Create a temporary canvas to convert receipt to image
+            const receiptElement = document.getElementById('receiptPreview');
+            html2canvas(receiptElement).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'টাকা-লেনদেন-রশিদ.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+        
+        // Load html2canvas library for download functionality
+        const script = document.createElement('script');
+        script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
